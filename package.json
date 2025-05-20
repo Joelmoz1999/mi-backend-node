@@ -1,0 +1,20 @@
+{
+  "name": "api-registro-propiedad",
+  "version": "1.0.0",
+  "description": "API para generación de PDFs del Registro de la Propiedad",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "pdf-lib": "^1.17.1"
+  },
+  "engines": {
+    "node": ">=14.x"
+  }
+}
