@@ -5,14 +5,22 @@ const path = require('path');
 const cors = require('cors');
 
 const app = express();
-const port = 5002;
+const port = process.env.PORT || 5002; // ✅ Cambio clave para Render
 
-app.use(cors());
+// Configuración CORS para tu dominio y desarrollo local
+app.use(cors({
+  origin: [
+    'https://www.regpropiedadpvm.gob.ec', // Tu dominio oficial
+    'http://localhost:3000'               // Para desarrollo
+  ]
+}));
+
+// Middlewares (idénticos a tu versión)
 app.use(express.json());
-app.use(express.json({ limit: '10mb' })); // Previene ataques de payload grande
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Ruta para rellenar el PDF de Gravamen
+// Ruta para rellenar el PDF de Gravamen (CÓDIGO ORIGINAL SIN CAMBIOS)
 app.post('/generar-pdf', async (req, res) => {
   // Datos de facturación
   const { nombre, cedulaFacturacion, direccion, correo, telefono } = req.body;
@@ -46,7 +54,6 @@ app.post('/generar-pdf', async (req, res) => {
     !apellidos ||
     !cedulaCertificacion ||
     !lugarInmueble ||
-    
     !usoCertificacion ||
     !especifiqueUso ||
     !recepcionDocumento ||
@@ -165,7 +172,7 @@ app.post('/generar-pdf', async (req, res) => {
   }
 });
 
-// Ruta para rellenar el PDF de Búsqueda
+// Ruta para rellenar el PDF de Búsqueda (CÓDIGO ORIGINAL SIN CAMBIOS)
 app.post('/generar-pdf-busqueda', async (req, res) => {
   // Datos de facturación (compartidos con gravamen)
   const { nombre, cedulaFacturacion, direccion, correo, telefono } = req.body;
@@ -223,15 +230,11 @@ app.post('/generar-pdf-busqueda', async (req, res) => {
     const firstPage = pages[0];
 
     // Rellenar el PDF con los datos de facturación
-
-
     firstPage.drawText(`${nombre}`, { x: 95, y: 665, size: 12 });
     firstPage.drawText(`${cedulaFacturacion}`, { x: 300, y: 635, size: 12 });
     firstPage.drawText(`${direccion}`, { x: 80, y: 612, size: 12 });
     firstPage.drawText(`${correo}`, { x: 135, y: 590, size: 12 });
     firstPage.drawText(`${telefono}`, { x: 440, y: 590, size: 12 });
-
-
 
     // Rellenar el PDF con los datos de búsqueda
     firstPage.drawText(`${nombresCompletos}`, { x: 95, y: 520, size: 12 });
@@ -285,7 +288,23 @@ app.post('/generar-pdf-busqueda', async (req, res) => {
   }
 });
 
-// Iniciar el servidor
+// ✅ Nuevo: Endpoint de salud para Render (requerido)
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    service: 'Generador de PDF - Registro de Propiedad PVM',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Iniciar servidor (con mensaje mejorado)
 app.listen(port, () => {
-  console.log(`Servidor backend escuchando en http://localhost:${port}`);
+  console.log('================================');
+  console.log(`🚀 Servidor activo en puerto ${port}`);
+  console.log(`🌐 Dominio oficial: https://www.regpropiedadpvm.gob.ec`);
+  console.log('Endpoints disponibles:');
+  console.log(`- POST /generar-pdf`);
+  console.log(`- POST /generar-pdf-busqueda`);
+  console.log(`- GET /health`);
+  console.log('================================');
 });
