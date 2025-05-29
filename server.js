@@ -369,7 +369,7 @@ app.post('/generar-pdf-razon', async (req, res) => {
       'Otro': { x: 220, y: 180 }
     };
     if (opcionesUso[usoCertificacion]) {
-      firstPage.drawText('X', opcionesUso[usoCertificacion]);
+      firstPage.drawText('x', opcionesUso[usoCertificacion]);
     }
 
     firstPage.drawText(especifiqueUso || 'N/A', { x: 140, y: 150, size: 12 });
