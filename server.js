@@ -288,6 +288,131 @@ app.post('/generar-pdf-busqueda', async (req, res) => {
   }
 });
 
+
+
+
+
+
+// Ruta para rellenar el PDF de Razón (nombres de variables únicos)
+app.post('/generar-pdf-razon', async (req, res) => {
+  // Datos de facturación (prefijo "fac_")
+  const { 
+    fac_nombre, 
+    fac_cedula, 
+    fac_direccion, 
+    fac_correo, 
+    fac_telefono 
+  } = req.body;
+
+  // Datos específicos de razón (prefijo "raz_")
+  const {
+    raz_apellidos,
+    raz_cedula,
+    raz_estadoCivil,
+    raz_lugarInmueble,
+    raz_usoCertificacion,
+    raz_especifiqueUso,
+    raz_recepcion,
+    raz_correoRecepcion,
+    raz_cedulaSolicitante
+  } = req.body;
+
+  // Validación clara
+  const camposRequeridos = [
+    !fac_nombre && "Nombre de facturación",
+    !fac_cedula && "Cédula de facturación",
+    !fac_direccion && "Dirección",
+    !fac_telefono && "Teléfono",
+    !raz_apellidos && "Apellidos",
+    !raz_cedula && "Cédula de certificación",
+    !raz_lugarInmueble && "Lugar del inmueble",
+    !raz_usoCertificacion && "Uso de certificación",
+    !raz_especifiqueUso && "Especificación de uso",
+    !raz_recepcion && "Recepción de documento",
+    (raz_recepcion === 'Electrónico' && !raz_correoRecepcion) && "Correo electrónico",
+    !raz_cedulaSolicitante && "Cédula del solicitante"
+  ].filter(Boolean);
+
+  if (camposRequeridos.length > 0) {
+    return res.status(400).json({ 
+      message: `Campos requeridos faltantes: ${camposRequeridos.join(', ')}` 
+    });
+  }
+
+  try {
+    // Cargar template específico (3.pdf)
+    const pdfPath = path.join(__dirname, 'pdfs', '2.pdf');
+    const pdfBytes = fs.readFileSync(pdfPath);
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const firstPage = pdfDoc.getPages()[0];
+
+    // === DATOS DE FACTURACIÓN (Coordenadas ajustables) ===
+    firstPage.drawText(fac_nombre, { x: 95, y: 700, size: 12 });
+    firstPage.drawText(fac_cedula, { x: 300, y: 670, size: 12 });
+    firstPage.drawText(fac_direccion, { x: 80, y: 650, size: 12 });
+    firstPage.drawText(fac_correo || 'N/A', { x: 135, y: 625, size: 12 });
+    firstPage.drawText(fac_telefono, { x: 440, y: 625, size: 12 });
+
+    // === DATOS DE RAZÓN ===
+    firstPage.drawText(raz_apellidos, { x: 95, y: 570, size: 12 });
+    firstPage.drawText(raz_cedula, { x: 390, y: 540, size: 12 });
+    firstPage.drawText(raz_estadoCivil || 'N/A', { x: 140, y: 525, size: 12 });
+    firstPage.drawText(raz_lugarInmueble, { x: 95, y: 510, size: 12 });
+
+    // Marcado de opciones (Ejemplo para "Uso de certificación")
+    const opcionesUso = {
+      'Tramites Judiciales': { x: 220, y: 296 },
+      'Instituciones Bancarias': { x: 220, y: 260 },
+      'Instituciones Publicas': { x: 220, y: 221 },
+      'Otro': { x: 220, y: 180 }
+    };
+    if (opcionesUso[raz_usoCertificacion]) {
+      firstPage.drawText('X', opcionesUso[raz_usoCertificacion]);
+    }
+
+    firstPage.drawText(raz_especifiqueUso || 'N/A', { x: 140, y: 150, size: 12 });
+
+    // Recepción del documento
+    if (raz_recepcion === 'Presencial') {
+      firstPage.drawText('X', { x: 398, y: 308, size: 12 });
+    } else if (raz_recepcion === 'Electrónico') {
+      firstPage.drawText('X', { x: 398, y: 280, size: 12 });
+      firstPage.drawText(raz_correoRecepcion, { x: 360, y: 260, size: 12 });
+    }
+
+    // Fecha y lugar automáticos
+    const fechaActual = new Date().toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+    firstPage.drawText('Pedro Vicente Maldonado', { x: 400, y: 225, size: 12 });
+    firstPage.drawText(fechaActual, { x: 340, y: 210, size: 12 });
+
+    firstPage.drawText(raz_cedulaSolicitante, { x: 400, y: 120, size: 12 });
+
+    // Generar y enviar PDF
+    const modifiedPdfBytes = await pdfDoc.save();
+    const tempFilePath = path.join(__dirname, 'temp_razon.pdf'); // Nombre único
+    fs.writeFileSync(tempFilePath, modifiedPdfBytes);
+
+    res.download(tempFilePath, 'Certificado_Razon.pdf', (err) => {
+      fs.unlinkSync(tempFilePath);
+      if (err) console.error('Error al enviar:', err);
+    });
+
+  } catch (error) {
+    console.error('Error en generación de PDF:', error);
+    res.status(500).json({ message: 'Error interno al procesar el PDF' });
+  }
+});
+
+
+
+
+
+
+
 // ✅ Nuevo: Endpoint de salud para Render (requerido)
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -305,6 +430,8 @@ app.listen(port, () => {
   console.log('Endpoints disponibles:');
   console.log(`- POST /generar-pdf`);
   console.log(`- POST /generar-pdf-busqueda`);
+  console.log(`- POST /generar-pdf-razon`);
+
   console.log(`- GET /health`);
   console.log('================================');
 });
