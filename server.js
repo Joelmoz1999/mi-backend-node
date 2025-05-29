@@ -368,9 +368,13 @@ app.post('/generar-pdf-razon', async (req, res) => {
       'Instituciones Publicas': { x: 220, y: 221 },
       'Otro': { x: 220, y: 180 }
     };
-    if (opcionesUso[usoCertificacion]) {
-      firstPage.drawText('x', opcionesUso[usoCertificacion]);
-    }
+  if (opcionesUso[usoCertificacion]) {
+  firstPage.drawText('X', { 
+    x: opcionesUso[usoCertificacion].x, 
+    y: opcionesUso[usoCertificacion].y, 
+    size: 12  // Añade este parámetro
+  });
+}
 
     firstPage.drawText(especifiqueUso || 'N/A', { x: 140, y: 150, size: 12 });
 
