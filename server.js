@@ -293,44 +293,46 @@ app.post('/generar-pdf-busqueda', async (req, res) => {
 
 
 
-// Ruta para rellenar el PDF de Razón (nombres de variables únicos)
+// Ruta para rellenar el PDF de Razón (nombres de variables sin prefijos)
 app.post('/generar-pdf-razon', async (req, res) => {
-  // Datos de facturación (prefijo "fac_")
+  // Datos de facturación
   const { 
-    fac_nombre, 
-    fac_cedula, 
-    fac_direccion, 
-    fac_correo, 
-    fac_telefono 
+    nombre,
+    cedulaFacturacion,
+    direccion,
+    correo,
+    telefono
   } = req.body;
 
-  // Datos específicos de razón (prefijo "raz_")
+  // Datos específicos de razón
   const {
-    raz_apellidos,
-    raz_cedula,
-    raz_estadoCivil,
-    raz_lugarInmueble,
-    raz_usoCertificacion,
-    raz_especifiqueUso,
-    raz_recepcion,
-    raz_correoRecepcion,
-    raz_cedulaSolicitante
+    apellidos,
+    cedulaCertificacion,
+    estadoCivil,
+    lugarInmueble,
+    usoCertificacion,
+    especifiqueUso,
+    recepcionDocumento,
+    correoRecepcion,
+    cedulaSolicitante,
+    aceptaResponsabilidad,
+    aceptaPoliticaDatos
   } = req.body;
 
   // Validación clara
   const camposRequeridos = [
-    !fac_nombre && "Nombre de facturación",
-    !fac_cedula && "Cédula de facturación",
-    !fac_direccion && "Dirección",
-    !fac_telefono && "Teléfono",
-    !raz_apellidos && "Apellidos",
-    !raz_cedula && "Cédula de certificación",
-    !raz_lugarInmueble && "Lugar del inmueble",
-    !raz_usoCertificacion && "Uso de certificación",
-    !raz_especifiqueUso && "Especificación de uso",
-    !raz_recepcion && "Recepción de documento",
-    (raz_recepcion === 'Electrónico' && !raz_correoRecepcion) && "Correo electrónico",
-    !raz_cedulaSolicitante && "Cédula del solicitante"
+    !nombre && "Nombre de facturación",
+    !cedulaFacturacion && "Cédula de facturación",
+    !direccion && "Dirección",
+    !telefono && "Teléfono",
+    !apellidos && "Apellidos",
+    !cedulaCertificacion && "Cédula de certificación",
+    !lugarInmueble && "Lugar del inmueble",
+    !usoCertificacion && "Uso de certificación",
+    !especifiqueUso && "Especificación de uso",
+    !recepcionDocumento && "Recepción de documento",
+    (recepcionDocumento === 'Electrónico' && !correoRecepcion) && "Correo electrónico",
+    !cedulaSolicitante && "Cédula del solicitante"
   ].filter(Boolean);
 
   if (camposRequeridos.length > 0) {
@@ -340,24 +342,24 @@ app.post('/generar-pdf-razon', async (req, res) => {
   }
 
   try {
-    // Cargar template específico (3.pdf)
+    // Cargar template específico (2.pdf)
     const pdfPath = path.join(__dirname, 'pdfs', '2.pdf');
     const pdfBytes = fs.readFileSync(pdfPath);
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const firstPage = pdfDoc.getPages()[0];
 
-    // === DATOS DE FACTURACIÓN (Coordenadas ajustables) ===
-    firstPage.drawText(fac_nombre, { x: 95, y: 700, size: 12 });
-    firstPage.drawText(fac_cedula, { x: 300, y: 670, size: 12 });
-    firstPage.drawText(fac_direccion, { x: 80, y: 650, size: 12 });
-    firstPage.drawText(fac_correo || 'N/A', { x: 135, y: 625, size: 12 });
-    firstPage.drawText(fac_telefono, { x: 440, y: 625, size: 12 });
+    // === DATOS DE FACTURACIÓN ===
+    firstPage.drawText(nombre, { x: 95, y: 700, size: 12 });
+    firstPage.drawText(cedulaFacturacion, { x: 300, y: 670, size: 12 });
+    firstPage.drawText(direccion, { x: 80, y: 650, size: 12 });
+    firstPage.drawText(correo || 'N/A', { x: 135, y: 625, size: 12 });
+    firstPage.drawText(telefono, { x: 440, y: 625, size: 12 });
 
     // === DATOS DE RAZÓN ===
-    firstPage.drawText(raz_apellidos, { x: 95, y: 570, size: 12 });
-    firstPage.drawText(raz_cedula, { x: 390, y: 540, size: 12 });
-    firstPage.drawText(raz_estadoCivil || 'N/A', { x: 140, y: 525, size: 12 });
-    firstPage.drawText(raz_lugarInmueble, { x: 95, y: 510, size: 12 });
+    firstPage.drawText(apellidos, { x: 95, y: 570, size: 12 });
+    firstPage.drawText(cedulaCertificacion, { x: 390, y: 540, size: 12 });
+    firstPage.drawText(estadoCivil || 'N/A', { x: 140, y: 525, size: 12 });
+    firstPage.drawText(lugarInmueble, { x: 95, y: 510, size: 12 });
 
     // Marcado de opciones (Ejemplo para "Uso de certificación")
     const opcionesUso = {
@@ -366,18 +368,18 @@ app.post('/generar-pdf-razon', async (req, res) => {
       'Instituciones Publicas': { x: 220, y: 221 },
       'Otro': { x: 220, y: 180 }
     };
-    if (opcionesUso[raz_usoCertificacion]) {
-      firstPage.drawText('X', opcionesUso[raz_usoCertificacion]);
+    if (opcionesUso[usoCertificacion]) {
+      firstPage.drawText('X', opcionesUso[usoCertificacion]);
     }
 
-    firstPage.drawText(raz_especifiqueUso || 'N/A', { x: 140, y: 150, size: 12 });
+    firstPage.drawText(especifiqueUso || 'N/A', { x: 140, y: 150, size: 12 });
 
     // Recepción del documento
-    if (raz_recepcion === 'Presencial') {
+    if (recepcionDocumento === 'Presencial') {
       firstPage.drawText('X', { x: 398, y: 308, size: 12 });
-    } else if (raz_recepcion === 'Electrónico') {
+    } else if (recepcionDocumento === 'Electrónico') {
       firstPage.drawText('X', { x: 398, y: 280, size: 12 });
-      firstPage.drawText(raz_correoRecepcion, { x: 360, y: 260, size: 12 });
+      firstPage.drawText(correoRecepcion, { x: 360, y: 260, size: 12 });
     }
 
     // Fecha y lugar automáticos
@@ -389,11 +391,11 @@ app.post('/generar-pdf-razon', async (req, res) => {
     firstPage.drawText('Pedro Vicente Maldonado', { x: 400, y: 225, size: 12 });
     firstPage.drawText(fechaActual, { x: 340, y: 210, size: 12 });
 
-    firstPage.drawText(raz_cedulaSolicitante, { x: 400, y: 120, size: 12 });
+    firstPage.drawText(cedulaSolicitante, { x: 400, y: 120, size: 12 });
 
     // Generar y enviar PDF
     const modifiedPdfBytes = await pdfDoc.save();
-    const tempFilePath = path.join(__dirname, 'temp_razon.pdf'); // Nombre único
+    const tempFilePath = path.join(__dirname, 'temp_razon.pdf');
     fs.writeFileSync(tempFilePath, modifiedPdfBytes);
 
     res.download(tempFilePath, 'Certificado_Razon.pdf', (err) => {
@@ -406,8 +408,6 @@ app.post('/generar-pdf-razon', async (req, res) => {
     res.status(500).json({ message: 'Error interno al procesar el PDF' });
   }
 });
-
-
 
 
 
