@@ -7,6 +7,14 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5002; // ✅ Cambio clave para Render
 
+// server.js (añádelo junto a tus otras rutas)
+app.get('/keepalive', (req, res) => {
+  res.status(200).json({ 
+    status: 'active',
+    timestamp: new Date().toISOString() 
+  });
+});
+
 // Configuración CORS para tu dominio y desarrollo local
 app.use(cors({
   origin: [
