@@ -128,12 +128,30 @@ app.post('/generar-pdf', async (req, res) => {
     }
 
   // Agregar el campo "Especifique"
-   firstPage.drawText(`${especifiqueUso || 'N/A'}`, {
-      x: 140,
-      y: 150,
-      size: 12,
-    });
+ const texto = especifiqueUso || 'N/A';
+const palabras = texto.trim().split(' ');
+let lineas = [];
+let lineaActual = '';
 
+// Divide el texto en líneas de máximo 25 caracteres (sin cortar palabras)
+palabras.forEach(palabra => {
+  if ((lineaActual + ' ' + palabra).length <= 25) {
+    lineaActual = lineaActual ? `${lineaActual} ${palabra}` : palabra;
+  } else {
+    lineas.push(lineaActual);
+    lineaActual = palabra;
+  }
+});
+if (lineaActual) lineas.push(lineaActual);
+
+// Dibuja cada línea (primera línea en y:150, segunda en y:138, etc.)
+lineas.forEach((linea, index) => {
+  firstPage.drawText(linea, {
+    x: 140,
+    y: 150 - (index * 12),  // 12 = espacio entre líneas
+    size: 12,
+  });
+});
 
 
 
