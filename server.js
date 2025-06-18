@@ -128,30 +128,40 @@ app.post('/generar-pdf', async (req, res) => {
     }
 
   // Agregar el campo "Especifique"
- const texto = especifiqueUso || 'N/A';
-const palabras = texto.trim().split(' ');
-let lineas = [];
-let lineaActual = '';
+ const text = especifiqueUso || 'N/A';
+const maxWidth = 150; // Ancho máximo en puntos (ajusta según tu PDF)
+const lineHeight = 15; // Espacio entre líneas
+let currentY = 150; // Posición Y inicial
+let currentLine = '';
+let words = text.split(' ');
 
-// Divide el texto en líneas de máximo 25 caracteres (sin cortar palabras)
-palabras.forEach(palabra => {
-  if ((lineaActual + ' ' + palabra).length <= 25) {
-    lineaActual = lineaActual ? `${lineaActual} ${palabra}` : palabra;
-  } else {
-    lineas.push(lineaActual);
-    lineaActual = palabra;
-  }
+words.forEach(word => {
+    const testLine = currentLine ? `${currentLine} ${word}` : word;
+    const testWidth = getTextWidth(testLine, 12);
+    
+    if (testWidth <= maxWidth) {
+        currentLine = testLine;
+    } else {
+        // Dibuja la línea actual
+        firstPage.drawText(currentLine, {
+            x: 140,
+            y: currentY,
+            size: 12,
+        });
+        // Prepara nueva línea
+        currentY -= lineHeight;
+        currentLine = word;
+    }
 });
-if (lineaActual) lineas.push(lineaActual);
 
-// Dibuja cada línea (primera línea en y:150, segunda en y:138, etc.)
-lineas.forEach((linea, index) => {
-  firstPage.drawText(linea, {
-    x: 140,
-    y: 150 - (index * 12),  // 12 = espacio entre líneas
-    size: 12,
-  });
-});
+// Dibuja la última línea
+if (currentLine) {
+    firstPage.drawText(currentLine, {
+        x: 135,
+        y: currentY,
+        size: 12,
+    });
+}
 
 
 
