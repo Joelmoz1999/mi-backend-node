@@ -9,9 +9,9 @@ const port = process.env.PORT || 5002; // ✅ Cambio clave para Render
 
 // server.js (añádelo junto a tus otras rutas)
 app.get('/keepalive', (req, res) => {
-  res.status(200).json({ 
+  res.status(200).json({
     status: 'active',
-    timestamp: new Date().toISOString() 
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -127,12 +127,85 @@ app.post('/generar-pdf', async (req, res) => {
       });
     }
 
-    // Agregar el campo "Especifique"
-    firstPage.drawText(`${especifiqueUso || 'N/A'}`, {
-      x: 140,
-      y: 150,
-      size: 12,
-    });
+
+
+
+
+
+
+
+    async function insertarTextoEnPDF(pdfExistente, texto) {
+      // 1. Cargar PDF existente (sin generarlo nuevo)
+      const pdfDoc = await PDFDocument.load(pdfExistente);
+
+      // 2. Obtener la primera página (ajusta si necesitas otra página)
+      const page = pdfDoc.getPage(0);
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+      // 3. Configuración exacta según tus requerimientos
+      const config = {
+        primeraLinea: { x: 140, y: 165 }, // Posición primera línea
+        segundaLinea: { x: 135, y: 150 }, // Posición segunda línea (como solicitaste)
+        maxWidth: 340,                    // Ancho máximo antes de dividir
+        fontSize: 12,
+        color: rgb(0, 0, 0)               // Color negro
+      };
+
+      // 4. Función para dividir texto (la misma versión mejorada)
+      const dividirTexto = (texto) => {
+        const palabras = texto.split(' ');
+        let linea1 = '';
+        let linea2 = '';
+        let primeraLineaLlena = false;
+
+        for (const palabra of palabras) {
+          const prueba = linea1 ? `${linea1} ${palabra}` : palabra;
+          const ancho = font.widthOfTextAtSize(prueba, config.fontSize);
+
+          if (!primeraLineaLlena && ancho <= config.maxWidth) {
+            linea1 = prueba;
+          } else {
+            primeraLineaLlena = true;
+            linea2 += linea2 ? ` ${palabra}` : palabra;
+          }
+        }
+
+        return {
+          primeraLinea: linea1 || 'N/A',
+          segundaLinea: linea2 || null
+        };
+      };
+
+      // 5. Dividir y colocar el texto
+      const { primeraLinea, segundaLinea } = dividirTexto(texto || '');
+
+      // Insertar primera línea
+      page.drawText(primeraLinea, {
+        x: config.primeraLinea.x,
+        y: config.primeraLinea.y,
+        size: config.fontSize,
+        font,
+        color: config.color
+      });
+
+      // Insertar segunda línea (si existe)
+      if (segundaLinea) {
+        page.drawText(segundaLinea, {
+          x: config.segundaLinea.x,
+          y: config.segundaLinea.y,
+          size: config.fontSize,
+          font,
+          color: config.color
+        });
+      }
+
+      // 6. Devolver el PDF modificado (sin generarlo nuevo)
+      return await pdfDoc.save();
+    }
+
+
+
+
 
     // Rellenar el PDF con los datos de recepción del documento
     if (recepcionDocumento === 'Presencial') {
@@ -304,7 +377,7 @@ app.post('/generar-pdf-busqueda', async (req, res) => {
 // Ruta para rellenar el PDF de Razón (nombres de variables sin prefijos)
 app.post('/generar-pdf-razon', async (req, res) => {
   // Datos de facturación
-  const { 
+  const {
     nombre,
     cedulaFacturacion,
     direccion,
@@ -344,8 +417,8 @@ app.post('/generar-pdf-razon', async (req, res) => {
   ].filter(Boolean);
 
   if (camposRequeridos.length > 0) {
-    return res.status(400).json({ 
-      message: `Campos requeridos faltantes: ${camposRequeridos.join(', ')}` 
+    return res.status(400).json({
+      message: `Campos requeridos faltantes: ${camposRequeridos.join(', ')}`
     });
   }
 
@@ -376,13 +449,13 @@ app.post('/generar-pdf-razon', async (req, res) => {
       'Instituciones Publicas': { x: 220, y: 221 },
       'Otro': { x: 220, y: 180 }
     };
-  if (opcionesUso[usoCertificacion]) {
-  firstPage.drawText('X', { 
-    x: opcionesUso[usoCertificacion].x, 
-    y: opcionesUso[usoCertificacion].y, 
-    size: 12  // Añade este parámetro
-  });
-}
+    if (opcionesUso[usoCertificacion]) {
+      firstPage.drawText('X', {
+        x: opcionesUso[usoCertificacion].x,
+        y: opcionesUso[usoCertificacion].y,
+        size: 12  // Añade este parámetro
+      });
+    }
 
     firstPage.drawText(especifiqueUso || 'N/A', { x: 140, y: 150, size: 12 });
 
