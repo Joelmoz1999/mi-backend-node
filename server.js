@@ -127,130 +127,63 @@ app.post('/generar-pdf', async (req, res) => {
       });
     }
 
-
-
-
-
-
-
-
-    async function insertarTextoEnPDF(pdfExistente, texto) {
-      // 1. Cargar PDF existente (sin generarlo nuevo)
-      const pdfDoc = await PDFDocument.load(pdfExistente);
-
-      // 2. Obtener la primera página (ajusta si necesitas otra página)
-      const page = pdfDoc.getPage(0);
-      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
-      // 3. Configuración exacta según tus requerimientos
-      const config = {
-        primeraLinea: { x: 140, y: 165 }, // Posición primera línea
-        segundaLinea: { x: 135, y: 150 }, // Posición segunda línea (como solicitaste)
-        maxWidth: 340,                    // Ancho máximo antes de dividir
-        fontSize: 12,
-        color: rgb(0, 0, 0)               // Color negro
-      };
-
-      // 4. Función para dividir texto (la misma versión mejorada)
-      const dividirTexto = (texto) => {
-        const palabras = texto.split(' ');
-        let linea1 = '';
-        let linea2 = '';
-        let primeraLineaLlena = false;
-
-        for (const palabra of palabras) {
-          const prueba = linea1 ? `${linea1} ${palabra}` : palabra;
-          const ancho = font.widthOfTextAtSize(prueba, config.fontSize);
-
-          if (!primeraLineaLlena && ancho <= config.maxWidth) {
-            linea1 = prueba;
-          } else {
-            primeraLineaLlena = true;
-            linea2 += linea2 ? ` ${palabra}` : palabra;
-          }
-        }
-
-        return {
-          primeraLinea: linea1 || 'N/A',
-          segundaLinea: linea2 || null
-        };
-      };
-
-      // 5. Dividir y colocar el texto
-      const { primeraLinea, segundaLinea } = dividirTexto(texto || '');
-
-      // Insertar primera línea
-      page.drawText(primeraLinea, {
-        x: config.primeraLinea.x,
-        y: config.primeraLinea.y,
-        size: config.fontSize,
-        font,
-        color: config.color
-      });
-
-      // Insertar segunda línea (si existe)
-      if (segundaLinea) {
-        page.drawText(segundaLinea, {
-          x: config.segundaLinea.x,
-          y: config.segundaLinea.y,
-          size: config.fontSize,
-          font,
-          color: config.color
-        });
-      }
-
-      // 6. Devolver el PDF modificado (sin generarlo nuevo)
-      return await pdfDoc.save();
-    }
-
-
-
-
-
-    // Rellenar el PDF con los datos de recepción del documento
-    if (recepcionDocumento === 'Presencial') {
-      firstPage.drawText('X', { x: 398, y: 308, size: 12 });
-    } else if (recepcionDocumento === 'Electrónico') {
-      firstPage.drawText('X', { x: 398, y: 280, size: 12 });
-      firstPage.drawText(`${correoRecepcion}`, { x: 360, y: 260, size: 12 });
-    }
-
-    // Agregar Lugar y Fecha automáticamente
-    const lugar = 'Pedro Vicente Maldonado';
-    const fechaActual = new Date().toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
+  // Agregar el campo "Especifique"
+   firstPage.drawText(`${especifiqueUso || 'N/A'}`, {
+      x: 140,
+      y: 150,
+      size: 12,
     });
 
-    firstPage.drawText(`${lugar}`, { x: 400, y: 225, size: 12 });
-    firstPage.drawText(`${fechaActual}`, { x: 340, y: 210, size: 12 });
 
-    // Agregar Cédula del Solicitante
-    firstPage.drawText(`${cedulaSolicitante}`, { x: 400, y: 120, size: 12 });
 
-    // Guardar el PDF modificado
-    const modifiedPdfBytes = await pdfDoc.save();
 
-    // Guardar el PDF modificado en un archivo temporal
-    const tempFilePath = path.join(__dirname, 'temp.pdf');
-    fs.writeFileSync(tempFilePath, modifiedPdfBytes);
 
-    // Enviar el archivo temporal como respuesta
-    res.download(tempFilePath, 'Formulario_Gravamen.pdf', (err) => {
-      if (err) {
-        console.error('Error al enviar el archivo:', err);
-        res.status(500).json({ message: 'Error al descargar el PDF.' });
-      }
 
-      // Eliminar el archivo temporal después de enviarlo
-      fs.unlinkSync(tempFilePath);
-      console.log('Archivo temporal eliminado.');
-    });
-  } catch (error) {
-    console.error('Error al rellenar el PDF:', error);
-    res.status(500).json({ message: 'Error al generar el PDF' });
+
+// Rellenar el PDF con los datos de recepción del documento
+if (recepcionDocumento === 'Presencial') {
+  firstPage.drawText('X', { x: 398, y: 308, size: 12 });
+} else if (recepcionDocumento === 'Electrónico') {
+  firstPage.drawText('X', { x: 398, y: 280, size: 12 });
+  firstPage.drawText(`${correoRecepcion}`, { x: 360, y: 260, size: 12 });
+}
+
+// Agregar Lugar y Fecha automáticamente
+const lugar = 'Pedro Vicente Maldonado';
+const fechaActual = new Date().toLocaleDateString('es-ES', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+firstPage.drawText(`${lugar}`, { x: 400, y: 225, size: 12 });
+firstPage.drawText(`${fechaActual}`, { x: 340, y: 210, size: 12 });
+
+// Agregar Cédula del Solicitante
+firstPage.drawText(`${cedulaSolicitante}`, { x: 400, y: 120, size: 12 });
+
+// Guardar el PDF modificado
+const modifiedPdfBytes = await pdfDoc.save();
+
+// Guardar el PDF modificado en un archivo temporal
+const tempFilePath = path.join(__dirname, 'temp.pdf');
+fs.writeFileSync(tempFilePath, modifiedPdfBytes);
+
+// Enviar el archivo temporal como respuesta
+res.download(tempFilePath, 'Formulario_Gravamen.pdf', (err) => {
+  if (err) {
+    console.error('Error al enviar el archivo:', err);
+    res.status(500).json({ message: 'Error al descargar el PDF.' });
   }
+
+  // Eliminar el archivo temporal después de enviarlo
+  fs.unlinkSync(tempFilePath);
+  console.log('Archivo temporal eliminado.');
+});
+  } catch (error) {
+  console.error('Error al rellenar el PDF:', error);
+  res.status(500).json({ message: 'Error al generar el PDF' });
+}
 });
 
 // Ruta para rellenar el PDF de Búsqueda (CÓDIGO ORIGINAL SIN CAMBIOS)
