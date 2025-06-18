@@ -128,40 +128,12 @@ app.post('/generar-pdf', async (req, res) => {
     }
 
   // Agregar el campo "Especifique"
- const text = especifiqueUso || 'N/A';
-const maxWidth = 150; // Ancho máximo en puntos (ajusta según tu PDF)
-const lineHeight = 15; // Espacio entre líneas
-let currentY = 150; // Posición Y inicial
-let currentLine = '';
-let words = text.split(' ');
-
-words.forEach(word => {
-    const testLine = currentLine ? `${currentLine} ${word}` : word;
-    const testWidth = getTextWidth(testLine, 12);
-    
-    if (testWidth <= maxWidth) {
-        currentLine = testLine;
-    } else {
-        // Dibuja la línea actual
-        firstPage.drawText(currentLine, {
-            x: 140,
-            y: currentY,
-            size: 12,
-        });
-        // Prepara nueva línea
-        currentY -= lineHeight;
-        currentLine = word;
-    }
-});
-
-// Dibuja la última línea
-if (currentLine) {
-    firstPage.drawText(currentLine, {
-        x: 135,
-        y: currentY,
-        size: 12,
+   firstPage.drawText(`${especifiqueUso || 'N/A'}`, {
+      x: 140,
+      y: 150,
+      size: 12,
     });
-}
+
 
 
 
