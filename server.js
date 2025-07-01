@@ -164,35 +164,48 @@ app.post('/generar-pdf', async (req, res) => {
 
 
 
-    // Configuración de márgenes por línea (¡Personaliza estos valores!)
+    // Configuración CONSISTENTE de márgenes
     const lineSettings = {
-      firstLine: { startX: 140, endX: 240, startY: 150 }, // Ancho: 300 (440-140)
-      secondLine: { startX: 120, endX: 240, startY: 170 }, // Misma anchura, 15pt arriba
-      thirdLine: { startX: 120, endX: 240, startY: 180 }  // Misma anchura, 15pt más arriba
+      firstLine: {
+        startX: 140,     // Margen izquierdo
+        endX: 240,       // Margen derecho (ancho: 100pts)
+        startY: 150      // Altura inicial
+      },
+      secondLine: {
+        startX: 140,     // Mismo margen izquierdo
+        endX: 240,
+        startY: 170      // +20pts respecto a primera línea
+      },
+      thirdLine: {
+        startX: 140,
+        endX: 240,
+        startY: 190      // +20pts respecto a segunda línea
+      }
     };
 
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const especifiqueText = especifiqueUso || 'N/A';
-    const maxWidth = lineSettings.firstLine.endX - lineSettings.firstLine.startX; // Ancho automático
     const fontSize = 12;
+
+    // Asegurar mismo ancho para todas las líneas
+    const maxWidth = lineSettings.firstLine.endX - lineSettings.firstLine.startX;
 
     const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
 
-    // Dibuja cada línea con sus coordenadas
+    // Dibujado SIMPLIFICADO
     lines.forEach((line, index) => {
       const settings =
         index === 0 ? lineSettings.firstLine :
           index === 1 ? lineSettings.secondLine :
-            { ...lineSettings.thirdLine, startY: lineSettings.thirdLine.startY - ((index - 2) * 15) };
+            lineSettings.thirdLine;
 
       firstPage.drawText(line, {
         x: settings.startX,
-        y: settings.startY,
+        y: settings.startY + (index > 2 ? (index - 2) * 20 : 0), // Ajuste para líneas extras
         size: fontSize,
         font: font,
       });
     });
-
 
 
 
