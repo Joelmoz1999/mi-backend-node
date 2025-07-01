@@ -171,7 +171,7 @@ app.post('/generar-pdf', async (req, res) => {
         firstLine: {
           startX: 140,    // Punto de INICIO horizontal (desde el borde izquierdo)
           endX: 440,      // Punto de FIN horizontal (para calcular ancho)
-          startY: 290     // Posición VERTICAL (Y aumenta hacia ARRIBA, disminuye hacia ABAJO)
+          startY: 250     // Posición VERTICAL (Y aumenta hacia ARRIBA, disminuye hacia ABAJO)
         },
         secondLine: {
           startX: 140,
@@ -230,6 +230,7 @@ app.post('/generar-pdf', async (req, res) => {
         x: settings.startX,
         y: settings.startY,
         size: 3,
+        color: rgb(1, 0, 0) // Rojo
       });
 
       // Dibujar texto
