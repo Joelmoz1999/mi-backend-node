@@ -188,7 +188,6 @@ const pageConfig = {
   font: {
     type: StandardFonts.Helvetica,
     size: 12,
-    color: rgb(0, 0, 0) // Color negro (RGB)
   }
 };
 
