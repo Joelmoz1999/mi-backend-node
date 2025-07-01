@@ -167,8 +167,8 @@ app.post('/generar-pdf', async (req, res) => {
     // Configuración de márgenes por línea (¡Personaliza estos valores!)
     const lineSettings = {
       firstLine: { startX: 140, endX: 195, startY: 150 }, // Ancho: 300 (440-140)
-      secondLine: { startX: 120, endX: 200, startY: 135 }, // Misma anchura, 15pt arriba
-      thirdLine: { startX: 120, endX: 205, startY: 120 }  // Misma anchura, 15pt más arriba
+      secondLine: { startX: 120, endX: 195, startY: 165 }, // Misma anchura, 15pt arriba
+      thirdLine: { startX: 120, endX: 195, startY: 180 }  // Misma anchura, 15pt más arriba
     };
 
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
