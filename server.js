@@ -174,14 +174,14 @@ const pageConfig = {
       startY: 250     // Posición VERTICAL (Y aumenta hacia ARRIBA, disminuye hacia ABAJO)
     },
     secondLine: {
-      startX: 110,
+      startX: 100,
       endX: 440,
       startY: 230     // 20pts ABAJO de la primera (250 - 20)
     },
     thirdLine: {
       startX: 140,
       endX: 440,
-      startY: 200     // 20pts ABAJO de la segunda (230 - 20)
+      startY: 190     // 20pts ABAJO de la segunda (230 - 20)
     }
   },
   // ↓↓↓ CONFIGURACIÓN GENERAL ↓↓↓
