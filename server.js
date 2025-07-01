@@ -19,7 +19,7 @@ function splitTextIntoLines(text, maxWidth, fontSize, font) {
     const word = words[i];
     const testLine = currentLine + ' ' + word;
     const testWidth = font.widthOfTextAtSize(testLine, fontSize);
-    
+
     if (testWidth > maxWidth) {
       lines.push(currentLine);
       currentLine = word;
@@ -164,35 +164,33 @@ app.post('/generar-pdf', async (req, res) => {
 
 
 
-  // Agregar el campo "Especifique"
- // Agregar el campo "Especifique" con salto de línea automático
-const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-const especifiqueText = especifiqueUso || 'N/A';
-const maxWidth = 225; // Ajusta este valor según el ancho disponible en tu PDF
-const fontSize = 12;
-const lineHeight = 15; // Espacio entre líneas
-const startX = 130;
-const startY = 147;
+    // Agregar el campo "Especifique" con salto de línea automático
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const especifiqueText = especifiqueUso || 'N/A';
+    const maxWidth = 300;
+    const fontSize = 12;
+    const lineSpacing = {
+      firstLine: 150,    // Posición Y de la primera línea
+      secondLine: 135,   // Posición Y de la segunda línea
+      thirdLine: 120     // Posición Y de la tercera línea
+    };
 
-const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
+    const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
 
-// Dibujar cada línea
-lines.forEach((line, index) => {
-  firstPage.drawText(line, {
-    x: startX,
-    y: startY - (index * lineHeight), // Restamos para bajar en el PDF
-    size: fontSize,
-    font: font,
-  });
-});
+    lines.forEach((line, index) => {
+      let yPosition;
 
+      if (index === 0) yPosition = lineSpacing.firstLine;
+      else if (index === 1) yPosition = lineSpacing.secondLine;
+      else yPosition = lineSpacing.thirdLine - ((index - 2) * 15);
 
-
-
-
-
-
-
+      firstPage.drawText(line, {
+        x: 140,
+        y: yPosition,
+        size: fontSize,
+        font: font,
+      });
+    });
 
 
 
@@ -202,50 +200,57 @@ lines.forEach((line, index) => {
 
 
 
-// Rellenar el PDF con los datos de recepción del documento
-if (recepcionDocumento === 'Presencial') {
-  firstPage.drawText('X', { x: 398, y: 308, size: 12 });
-} else if (recepcionDocumento === 'Electrónico') {
-  firstPage.drawText('X', { x: 398, y: 280, size: 12 });
-  firstPage.drawText(`${correoRecepcion}`, { x: 360, y: 260, size: 12 });
-}
 
-// Agregar Lugar y Fecha automáticamente
-const lugar = 'Pedro Vicente Maldonado';
-const fechaActual = new Date().toLocaleDateString('es-ES', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
 
-firstPage.drawText(`${lugar}`, { x: 400, y: 225, size: 12 });
-firstPage.drawText(`${fechaActual}`, { x: 340, y: 210, size: 12 });
 
-// Agregar Cédula del Solicitante
-firstPage.drawText(`${cedulaSolicitante}`, { x: 400, y: 120, size: 12 });
 
-// Guardar el PDF modificado
-const modifiedPdfBytes = await pdfDoc.save();
 
-// Guardar el PDF modificado en un archivo temporal
-const tempFilePath = path.join(__dirname, 'temp.pdf');
-fs.writeFileSync(tempFilePath, modifiedPdfBytes);
 
-// Enviar el archivo temporal como respuesta
-res.download(tempFilePath, 'Formulario_Gravamen.pdf', (err) => {
-  if (err) {
-    console.error('Error al enviar el archivo:', err);
-    res.status(500).json({ message: 'Error al descargar el PDF.' });
-  }
 
-  // Eliminar el archivo temporal después de enviarlo
-  fs.unlinkSync(tempFilePath);
-  console.log('Archivo temporal eliminado.');
-});
+    // Rellenar el PDF con los datos de recepción del documento
+    if (recepcionDocumento === 'Presencial') {
+      firstPage.drawText('X', { x: 398, y: 308, size: 12 });
+    } else if (recepcionDocumento === 'Electrónico') {
+      firstPage.drawText('X', { x: 398, y: 280, size: 12 });
+      firstPage.drawText(`${correoRecepcion}`, { x: 360, y: 260, size: 12 });
+    }
+
+    // Agregar Lugar y Fecha automáticamente
+    const lugar = 'Pedro Vicente Maldonado';
+    const fechaActual = new Date().toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+
+    firstPage.drawText(`${lugar}`, { x: 400, y: 225, size: 12 });
+    firstPage.drawText(`${fechaActual}`, { x: 340, y: 210, size: 12 });
+
+    // Agregar Cédula del Solicitante
+    firstPage.drawText(`${cedulaSolicitante}`, { x: 400, y: 120, size: 12 });
+
+    // Guardar el PDF modificado
+    const modifiedPdfBytes = await pdfDoc.save();
+
+    // Guardar el PDF modificado en un archivo temporal
+    const tempFilePath = path.join(__dirname, 'temp.pdf');
+    fs.writeFileSync(tempFilePath, modifiedPdfBytes);
+
+    // Enviar el archivo temporal como respuesta
+    res.download(tempFilePath, 'Formulario_Gravamen.pdf', (err) => {
+      if (err) {
+        console.error('Error al enviar el archivo:', err);
+        res.status(500).json({ message: 'Error al descargar el PDF.' });
+      }
+
+      // Eliminar el archivo temporal después de enviarlo
+      fs.unlinkSync(tempFilePath);
+      console.log('Archivo temporal eliminado.');
+    });
   } catch (error) {
-  console.error('Error al rellenar el PDF:', error);
-  res.status(500).json({ message: 'Error al generar el PDF' });
-}
+    console.error('Error al rellenar el PDF:', error);
+    res.status(500).json({ message: 'Error al generar el PDF' });
+  }
 });
 
 // Ruta para rellenar el PDF de Búsqueda (CÓDIGO ORIGINAL SIN CAMBIOS)
