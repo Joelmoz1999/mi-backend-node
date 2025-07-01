@@ -174,7 +174,7 @@ const pageConfig = {
       startY: 250     // Posición VERTICAL (Y aumenta hacia ARRIBA, disminuye hacia ABAJO)
     },
     secondLine: {
-      startX: 140,
+      startX: 110,
       endX: 440,
       startY: 230     // 20pts ABAJO de la primera (250 - 20)
     },
