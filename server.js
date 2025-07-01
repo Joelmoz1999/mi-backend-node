@@ -172,14 +172,14 @@ const lineSettings = {
     startY: 150 
   },
   secondLine: { 
-    startX: 140, 
+    startX: 120, 
     endX: 400,
-    startY: 130  // ↓ Bajé 20pts (antes 170) 
+    startY: 170  // ↓ Bajé 20pts (antes 170) 
   },
   thirdLine: { 
     startX: 140, 
     endX: 400,
-    startY: 110  // ↓ Bajé 20pts (antes 190)
+    startY: 190  // ↓ Bajé 20pts (antes 190)
   }
 };
 
