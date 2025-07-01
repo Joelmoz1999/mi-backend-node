@@ -164,48 +164,48 @@ app.post('/generar-pdf', async (req, res) => {
 
 
 
-    // Configuración CONSISTENTE de márgenes
-    const lineSettings = {
-      firstLine: {
-        startX: 140,     // Margen izquierdo
-        endX: 240,       // Margen derecho (ancho: 100pts)
-        startY: 150      // Altura inicial
-      },
-      secondLine: {
-        startX: 140,     // Mismo margen izquierdo
-        endX: 240,
-        startY: 170      // +20pts respecto a primera línea
-      },
-      thirdLine: {
-        startX: 140,
-        endX: 240,
-        startY: 190      // +20pts respecto a segunda línea
-      }
-    };
+ // Configuración CONSISTENTE de márgenes
+const lineSettings = {
+  firstLine: { 
+    startX: 140,     // Margen izquierdo
+    endX: 240,       // Margen derecho (ancho: 100pts)
+    startY: 150      // Altura inicial
+  },
+  secondLine: { 
+    startX: 140,     // Mismo margen izquierdo
+    endX: 240, 
+    startY: 170      // +20pts respecto a primera línea
+  },
+  thirdLine: { 
+    startX: 140, 
+    endX: 240,
+    startY: 190      // +20pts respecto a segunda línea
+  }
+};
 
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const especifiqueText = especifiqueUso || 'N/A';
-    const fontSize = 12;
+const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+const especifiqueText = especifiqueUso || 'N/A';
+const fontSize = 12;
 
-    // Asegurar mismo ancho para todas las líneas
-    const maxWidth = lineSettings.firstLine.endX - lineSettings.firstLine.startX;
+// Asegurar mismo ancho para todas las líneas
+const maxWidth = lineSettings.firstLine.endX - lineSettings.firstLine.startX;
 
-    const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
+const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
 
-    // Dibujado SIMPLIFICADO
-    lines.forEach((line, index) => {
-      const settings =
-        index === 0 ? lineSettings.firstLine :
-          index === 1 ? lineSettings.secondLine :
-            lineSettings.thirdLine;
+// Dibujado SIMPLIFICADO
+lines.forEach((line, index) => {
+  const settings = 
+    index === 0 ? lineSettings.firstLine :
+    index === 1 ? lineSettings.secondLine :
+    lineSettings.thirdLine;
 
-      firstPage.drawText(line, {
-        x: settings.startX,
-        y: settings.startY + (index > 2 ? (index - 2) * 20 : 0), // Ajuste para líneas extras
-        size: fontSize,
-        font: font,
-      });
-    });
+  firstPage.drawText(line, {
+    x: settings.startX,
+    y: settings.startY + (index > 2 ? (index - 2) * 20 : 0), // Ajuste para líneas extras
+    size: fontSize,
+    font: font,
+  });
+});
 
 
 
