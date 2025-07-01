@@ -164,84 +164,36 @@ app.post('/generar-pdf', async (req, res) => {
 
 
 
-    // CONFIGURACIÓN COMPLETA Y AJUSTABLE (EDITA ESTOS VALORES)
-    const pageConfig = {
-      // ↓↓↓ CONTROL DE LÍNEAS INDIVIDUALES ↓↓↓
-      lines: {
-        firstLine: {
-          startX: 140,    // Punto de INICIO horizontal (desde el borde izquierdo)
-          endX: 440,      // Punto de FIN horizontal (para calcular ancho)
-          startY: 250     // Posición VERTICAL (Y aumenta hacia ARRIBA, disminuye hacia ABAJO)
-        },
-        secondLine: {
-          startX: 140,
-          endX: 440,
-          startY: 230     // 20pts ABAJO de la primera (250 - 20)
-        },
-        thirdLine: {
-          startX: 140,
-          endX: 440,
-          startY: 210     // 20pts ABAJO de la segunda (230 - 20)
-        }
-      },
-      // ↓↓↓ CONFIGURACIÓN GENERAL ↓↓↓
-      font: {
-        type: StandardFonts.Helvetica,
-        size: 12,
-      }
+    // Configuración de márgenes por línea (¡Personaliza estos valores!)
+    const lineSettings = {
+      firstLine: { startX: 140, endX: 340, startY: 150 }, // Ancho: 300 (440-140)
+      secondLine: { startX: 120, endX: 240, startY: 130 }, // Misma anchura, 15pt arriba
+      thirdLine: { startX: 120, endX: 240, startY: 120 }  // Misma anchura, 15pt más arriba
     };
 
-    // FUNCIÓN PARA DIVIDIR TEXTO (NO MODIFICAR)
-    function splitTextIntoLines(text, maxWidth, fontSize, font) {
-      const words = text.split(' ');
-      const lines = [];
-      let currentLine = words[0];
-
-      for (let i = 1; i < words.length; i++) {
-        const word = words[i];
-        const testLine = currentLine + ' ' + word;
-        const testWidth = font.widthOfTextAtSize(testLine, fontSize);
-
-        if (testWidth > maxWidth) {
-          lines.push(currentLine);
-          currentLine = word;
-        } else {
-          currentLine = testLine;
-        }
-      }
-      lines.push(currentLine);
-      return lines;
-    }
-
-    // ↓↓↓ IMPLEMENTACIÓN (NO MODIFICAR) ↓↓↓
-    const font = await pdfDoc.embedFont(pageConfig.font.type);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const especifiqueText = especifiqueUso || 'N/A';
-    const maxWidth = pageConfig.lines.firstLine.endX - pageConfig.lines.firstLine.startX;
+    const maxWidth = lineSettings.firstLine.endX - lineSettings.firstLine.startX; // Ancho automático
+    const fontSize = 12;
 
-    const lines = splitTextIntoLines(especifiqueText, maxWidth, pageConfig.font.size, font);
+    const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
 
-    // Dibujar líneas con DEBUG VISUAL
+    // Dibuja cada línea con sus coordenadas
     lines.forEach((line, index) => {
-      const lineKey = index === 0 ? 'firstLine' : index === 1 ? 'secondLine' : 'thirdLine';
-      const settings = pageConfig.lines[lineKey];
+      const settings =
+        index === 0 ? lineSettings.firstLine :
+          index === 1 ? lineSettings.secondLine :
+            { ...lineSettings.thirdLine, startY: lineSettings.thirdLine.startY - ((index - 2) * 15) };
 
-      // DEBUG: Dibuja un punto de referencia (opcional)
-      firstPage.drawCircle({
-        x: settings.startX,
-        y: settings.startY,
-        size: 3,
-        color: rgb(1, 0, 0) // Rojo
-      });
-
-      // Dibujar texto
       firstPage.drawText(line, {
         x: settings.startX,
         y: settings.startY,
-        size: pageConfig.font.size,
+        size: fontSize,
         font: font,
-        color: pageConfig.font.color
       });
     });
+
+
 
 
 
