@@ -170,8 +170,8 @@ app.post('/generar-pdf', async (req, res) => {
     const maxWidth = 300;
     const fontSize = 12;
     const lineSpacing = {
-      firstLine: 150,    // Posición Y de la primera línea
-      secondLine: 135,   // Posición Y de la segunda línea
+      firstLine: 145,    // Posición Y de la primera línea
+      secondLine: 125,   // Posición Y de la segunda línea
       thirdLine: 120     // Posición Y de la tercera línea
     };
 
