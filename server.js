@@ -164,29 +164,30 @@ app.post('/generar-pdf', async (req, res) => {
 
 
 
-    // Agregar el campo "Especifique" con salto de línea automático
+    // Configuración de márgenes por línea (¡Personaliza estos valores!)
+    const lineSettings = {
+      firstLine: { startX: 140, endX: 440, startY: 150 }, // Ancho: 300 (440-140)
+      secondLine: { startX: 140, endX: 440, startY: 135 }, // Misma anchura, 15pt arriba
+      thirdLine: { startX: 140, endX: 440, startY: 120 }   // Misma anchura, 15pt más arriba
+    };
+
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const especifiqueText = especifiqueUso || 'N/A';
-    const maxWidth = 250;
+    const maxWidth = lineSettings.firstLine.endX - lineSettings.firstLine.startX; // Ancho automático
     const fontSize = 12;
-    const lineSpacing = {
-      firstLine: 150,    // Posición Y de la primera línea
-      secondLine: 135,   // Posición Y de la segunda línea
-      thirdLine: 120     // Posición Y de la tercera línea
-    };
 
     const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
 
+    // Dibuja cada línea con sus coordenadas
     lines.forEach((line, index) => {
-      let yPosition;
-
-      if (index === 0) yPosition = lineSpacing.firstLine;
-      else if (index === 1) yPosition = lineSpacing.secondLine;
-      else yPosition = lineSpacing.thirdLine - ((index - 2) * 15);
+      const settings =
+        index === 0 ? lineSettings.firstLine :
+          index === 1 ? lineSettings.secondLine :
+            { ...lineSettings.thirdLine, startY: lineSettings.thirdLine.startY - ((index - 2) * 15) };
 
       firstPage.drawText(line, {
-        x: 140,
-        y: yPosition,
+        x: settings.startX,
+        y: settings.startY,
         size: fontSize,
         font: font,
       });
