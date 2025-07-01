@@ -164,84 +164,85 @@ app.post('/generar-pdf', async (req, res) => {
 
 
 
-   // CONFIGURACIÓN COMPLETA Y AJUSTABLE (EDITA ESTOS VALORES)
-const pageConfig = {
-  // ↓↓↓ CONTROL DE LÍNEAS INDIVIDUALES ↓↓↓
-  lines: {
-    firstLine: {
-      startX: 140,    // Punto de INICIO horizontal (desde el borde izquierdo)
-      endX: 440,      // Punto de FIN horizontal (para calcular ancho)
-      startY: 250     // Posición VERTICAL (Y aumenta hacia ARRIBA, disminuye hacia ABAJO)
-    },
-    secondLine: {
-      startX: 100,
-      endX: 440,
-      startY: 230     // 20pts ABAJO de la primera (250 - 20)
-    },
-    thirdLine: {
-      startX: 140,
-      endX: 440,
-      startY: 190     // 20pts ABAJO de la segunda (230 - 20)
-    }
-  },
-  // ↓↓↓ CONFIGURACIÓN GENERAL ↓↓↓
-  font: {
-    type: StandardFonts.Helvetica,
-    size: 12,
-  }
-};
+    // CONFIGURACIÓN COMPLETA Y AJUSTABLE (EDITA ESTOS VALORES)
+    const pageConfig = {
+      // ↓↓↓ CONTROL DE LÍNEAS INDIVIDUALES ↓↓↓
+      lines: {
+        firstLine: {
+          startX: 140,    // Punto de INICIO horizontal (desde el borde izquierdo)
+          endX: 440,      // Punto de FIN horizontal (para calcular ancho)
+          startY: 250     // Posición VERTICAL (Y aumenta hacia ARRIBA, disminuye hacia ABAJO)
+        },
+        secondLine: {
+          startX: 140,
+          endX: 440,
+          startY: 230     // 20pts ABAJO de la primera (250 - 20)
+        },
+        thirdLine: {
+          startX: 140,
+          endX: 440,
+          startY: 210     // 20pts ABAJO de la segunda (230 - 20)
+        }
+      },
+      // ↓↓↓ CONFIGURACIÓN GENERAL ↓↓↓
+      font: {
+        type: StandardFonts.Helvetica,
+        size: 12,
+        color: rgb(0, 0, 0) // Color negro (RGB)
+      }
+    };
 
-// FUNCIÓN PARA DIVIDIR TEXTO (NO MODIFICAR)
-function splitTextIntoLines(text, maxWidth, fontSize, font) {
-  const words = text.split(' ');
-  const lines = [];
-  let currentLine = words[0];
+    // FUNCIÓN PARA DIVIDIR TEXTO (NO MODIFICAR)
+    function splitTextIntoLines(text, maxWidth, fontSize, font) {
+      const words = text.split(' ');
+      const lines = [];
+      let currentLine = words[0];
 
-  for (let i = 1; i < words.length; i++) {
-    const word = words[i];
-    const testLine = currentLine + ' ' + word;
-    const testWidth = font.widthOfTextAtSize(testLine, fontSize);
-    
-    if (testWidth > maxWidth) {
+      for (let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const testLine = currentLine + ' ' + word;
+        const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+
+        if (testWidth > maxWidth) {
+          lines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
       lines.push(currentLine);
-      currentLine = word;
-    } else {
-      currentLine = testLine;
+      return lines;
     }
-  }
-  lines.push(currentLine);
-  return lines;
-}
 
-// ↓↓↓ IMPLEMENTACIÓN (NO MODIFICAR) ↓↓↓
-const font = await pdfDoc.embedFont(pageConfig.font.type);
-const especifiqueText = especifiqueUso || 'N/A';
-const maxWidth = pageConfig.lines.firstLine.endX - pageConfig.lines.firstLine.startX;
+    // ↓↓↓ IMPLEMENTACIÓN (NO MODIFICAR) ↓↓↓
+    const font = await pdfDoc.embedFont(pageConfig.font.type);
+    const especifiqueText = especifiqueUso || 'N/A';
+    const maxWidth = pageConfig.lines.firstLine.endX - pageConfig.lines.firstLine.startX;
 
-const lines = splitTextIntoLines(especifiqueText, maxWidth, pageConfig.font.size, font);
+    const lines = splitTextIntoLines(especifiqueText, maxWidth, pageConfig.font.size, font);
 
-// Dibujar líneas con DEBUG VISUAL
-lines.forEach((line, index) => {
-  const lineKey = index === 0 ? 'firstLine' : index === 1 ? 'secondLine' : 'thirdLine';
-  const settings = pageConfig.lines[lineKey];
-  
-  // DEBUG: Dibuja un punto de referencia (opcional)
-  firstPage.drawCircle({
-    x: settings.startX,
-    y: settings.startY,
-    size: 3,
-  });
+    // Dibujar líneas con DEBUG VISUAL
+    lines.forEach((line, index) => {
+      const lineKey = index === 0 ? 'firstLine' : index === 1 ? 'secondLine' : 'thirdLine';
+      const settings = pageConfig.lines[lineKey];
 
-  // Dibujar texto
-  firstPage.drawText(line, {
-    x: settings.startX,
-    y: settings.startY,
-    size: pageConfig.font.size,
-    font: font,
-    color: pageConfig.font.color
-  });
-});
+      // DEBUG: Dibuja un punto de referencia (opcional)
+      firstPage.drawCircle({
+        x: settings.startX,
+        y: settings.startY,
+        size: 3,
+        color: rgb(1, 0, 0) // Rojo
+      });
 
+      // Dibujar texto
+      firstPage.drawText(line, {
+        x: settings.startX,
+        y: settings.startY,
+        size: pageConfig.font.size,
+        font: font,
+        color: pageConfig.font.color
+      });
+    });
 
 
 
