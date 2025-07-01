@@ -230,7 +230,6 @@ lines.forEach((line, index) => {
     x: settings.startX,
     y: settings.startY,
     size: 3,
-    color: rgb(1, 0, 0) // Rojo
   });
 
   // Dibujar texto
