@@ -168,11 +168,11 @@ app.post('/generar-pdf', async (req, res) => {
  // Agregar el campo "Especifique" con salto de línea automático
 const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 const especifiqueText = especifiqueUso || 'N/A';
-const maxWidth = 300; // Ajusta este valor según el ancho disponible en tu PDF
+const maxWidth = 225; // Ajusta este valor según el ancho disponible en tu PDF
 const fontSize = 12;
 const lineHeight = 15; // Espacio entre líneas
-const startX = 140;
-const startY = 150;
+const startX = 130;
+const startY = 147;
 
 const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
 
