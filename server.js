@@ -1,11 +1,43 @@
 const express = require('express');
-const { PDFDocument } = require('pdf-lib');
+const { PDFDocument, StandardFonts } = require('pdf-lib');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 5002; // ✅ Cambio clave para Render
+
+
+
+// Función para dividir texto en múltiples líneas
+function splitTextIntoLines(text, maxWidth, fontSize, font) {
+  const words = text.split(' ');
+  const lines = [];
+  let currentLine = words[0];
+
+  for (let i = 1; i < words.length; i++) {
+    const word = words[i];
+    const testLine = currentLine + ' ' + word;
+    const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+    
+    if (testWidth > maxWidth) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  }
+  lines.push(currentLine);
+  return lines;
+}
+
+
+
+
+
+
+
+
 
 // server.js (añádelo junto a tus otras rutas)
 app.get('/keepalive', (req, res) => {
@@ -127,12 +159,42 @@ app.post('/generar-pdf', async (req, res) => {
       });
     }
 
+
+
+
+
+
   // Agregar el campo "Especifique"
-   firstPage.drawText(`${especifiqueUso || 'N/A'}`, {
-      x: 140,
-      y: 150,
-      size: 12,
-    });
+ // Agregar el campo "Especifique" con salto de línea automático
+const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+const especifiqueText = especifiqueUso || 'N/A';
+const maxWidth = 300; // Ajusta este valor según el ancho disponible en tu PDF
+const fontSize = 12;
+const lineHeight = 15; // Espacio entre líneas
+const startX = 140;
+const startY = 150;
+
+const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
+
+// Dibujar cada línea
+lines.forEach((line, index) => {
+  firstPage.drawText(line, {
+    x: startX,
+    y: startY - (index * lineHeight), // Restamos para bajar en el PDF
+    size: fontSize,
+    font: font,
+  });
+});
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -195,10 +257,10 @@ app.post('/generar-pdf-busqueda', async (req, res) => {
   const {
     nombresCompletos,
     cedula,
-    estadoCivil,
+    estadoCivilSolicitante,
     nombresSolicitante,
     cedulaSolicitante,
-    estadoCivilSolicitante,
+    estadoCivilBuscado,
     declaracionUso,
     recepcionDocumento,
     correoRecepcion
@@ -212,10 +274,10 @@ app.post('/generar-pdf-busqueda', async (req, res) => {
     !telefono ||
     !nombresCompletos ||
     !cedula ||
-    !estadoCivil ||
+    !estadoCivilSolicitante ||
     !nombresSolicitante ||
     !cedulaSolicitante ||
-    !estadoCivilSolicitante ||
+    !estadoCivilBuscado ||
     !declaracionUso ||
     !recepcionDocumento ||
     (recepcionDocumento === 'Electrónico' && !correoRecepcion)
@@ -253,10 +315,10 @@ app.post('/generar-pdf-busqueda', async (req, res) => {
     // Rellenar el PDF con los datos de búsqueda
     firstPage.drawText(`${nombresCompletos}`, { x: 95, y: 520, size: 12 });
     firstPage.drawText(`${cedula}`, { x: 270, y: 488, size: 12 });
-    firstPage.drawText(`${estadoCivil}`, { x: 460, y: 488, size: 12 });
+    firstPage.drawText(`${estadoCivilSolicitante}`, { x: 460, y: 488, size: 12 });
     firstPage.drawText(`${nombresSolicitante}`, { x: 180, y: 440, size: 12 });
     firstPage.drawText(`${cedulaSolicitante}`, { x: 390, y: 410, size: 12 });
-    firstPage.drawText(`${estadoCivilSolicitante}`, { x: 140, y: 388, size: 12 });
+    firstPage.drawText(`${estadoCivilBuscado}`, { x: 140, y: 388, size: 12 });
     firstPage.drawText(`${declaracionUso}`, { x: 110, y: 366, size: 12 });
 
     // Rellenar el PDF con los datos de recepción del documento
