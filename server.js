@@ -461,37 +461,71 @@ app.post('/generar-pdf-razon', async (req, res) => {
 
 
 
+    
+// Configuración de líneas para Certificado de Razón
+const lineSettingsRazon = {
+  firstLine: { 
+    startX: 140,     // Mismo X que tu versión original
+    endX: 340,       // Ancho de 200pts (340-140)
+    startY: 150      // Mismo Y que tu versión original
+  },
+  secondLine: { 
+    startX: 120,     // 20pts más a la izquierda
+    endX: 340,       // Mismo ancho que primera línea
+    startY: 130      // 20pts más arriba (Y mayor = más arriba en PDF)
+  },
+  thirdLine: { 
+    startX: 120, 
+    endX: 340,
+    startY: 110      // 20pts más arriba que la segunda
+  }
+};
 
-    const lineSettings = {
-      firstLine: { startX: 140, endX: 340, startY: 150 }, // Ancho: 300 (440-140)
-      secondLine: { startX: 120, endX: 240, startY: 130 }, // Misma anchura, 15pt arriba
-      thirdLine: { startX: 120, endX: 240, startY: 120 }  // Misma anchura, 15pt más arriba
+// Generación del texto multilínea
+const fontRazon = await pdfDoc.embedFont(StandardFonts.Helvetica);
+const textoRazon = especifiqueUso || 'N/A';
+const maxWidthRazon = lineSettingsRazon.firstLine.endX - lineSettingsRazon.firstLine.startX;
+const linesRazon = splitTextIntoLines(textoRazon, maxWidthRazon, 12, fontRazon);
+
+// Dibujado de líneas (mismo sistema que usas en gravamen)
+linesRazon.forEach((line, index) => {
+  const settings =
+    index === 0 ? lineSettingsRazon.firstLine :
+    index === 1 ? lineSettingsRazon.secondLine :
+    { 
+      ...lineSettingsRazon.thirdLine, 
+      startY: lineSettingsRazon.thirdLine.startY - ((index - 2) * 15) 
     };
 
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const especifiqueText = especifiqueUso || 'N/A';
-    const maxWidth = lineSettings.firstLine.endX - lineSettings.firstLine.startX; // Ancho automático
-    const fontSize = 12;
+  firstPage.drawText(line, {
+    x: settings.startX,
+    y: settings.startY,
+    size: 12,
+    font: fontRazon,
+  });
+});
 
-    const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
+// Función de división de texto (debes tenerla ya definida)
+function splitTextIntoLines(text, maxWidth, fontSize, font) {
+  const words = text.split(' ');
+  const lines = [];
+  let currentLine = words[0];
 
-    // Dibuja cada línea con sus coordenadas
-    lines.forEach((line, index) => {
-      const settings =
-        index === 0 ? lineSettings.firstLine :
-          index === 1 ? lineSettings.secondLine :
-            { ...lineSettings.thirdLine, startY: lineSettings.thirdLine.startY - ((index - 2) * 15) };
-
-      firstPage.drawText(line, {
-        x: settings.startX,
-        y: settings.startY,
-        size: fontSize,
-        font: font,
-      });
-    });
-
-
-
+  for (let i = 1; i < words.length; i++) {
+    const word = words[i];
+    const testLine = currentLine + ' ' + word;
+    const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+    
+    if (testWidth > maxWidth) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  }
+  lines.push(currentLine);
+  return lines;
+}
 
 
 
