@@ -164,50 +164,62 @@ app.post('/generar-pdf', async (req, res) => {
 
 
 
-    // Configuración CONSISTENTE de márgenes
-    const lineSettings = {
-      firstLine: {
-        startX: 140,     // Margen izquierdo
-        endX: 240,       // Margen derecho (ancho: 100pts)
-        startY: 150      // Altura inicial
-      },
-      secondLine: {
-        startX: 140,     // Mismo margen izquierdo
-        endX: 240,
-        startY: 170      // +20pts respecto a primera línea
-      },
-      thirdLine: {
-        startX: 140,
-        endX: 240,
-        startY: 190      // +20pts respecto a segunda línea
-      }
-    };
+  // 1. Configuración optimizada de coordenadas
+const lineSettings = {
+  firstLine: { 
+    startX: 140, 
+    endX: 400,  // ↑ Aumenté el ancho de 240 a 400 (260pts ahora)
+    startY: 150 
+  },
+  secondLine: { 
+    startX: 140, 
+    endX: 400,
+    startY: 130  // ↓ Bajé 20pts (antes 170) 
+  },
+  thirdLine: { 
+    startX: 140, 
+    endX: 400,
+    startY: 110  // ↓ Bajé 20pts (antes 190)
+  }
+};
 
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const especifiqueText = especifiqueUso || 'N/A';
-    const fontSize = 12;
+// 2. Configuración mejorada de fuente
+const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold); // Cambié a Bold para mejor legibilidad
 
-    // Asegurar mismo ancho para todas las líneas
-    const maxWidth = lineSettings.firstLine.endX - lineSettings.firstLine.startX;
+// 3. Función de división de texto mejorada
+function splitTextIntoLines(text, maxWidth, fontSize, font) {
+  const words = text.split(' ');
+  const lines = [];
+  let currentLine = words[0];
 
-    const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
+  for (let i = 1; i < words.length; i++) {
+    const word = words[i];
+    const testLine = currentLine + ' ' + word;
+    const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+    
+    if (testWidth > maxWidth) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  }
+  lines.push(currentLine);
+  return lines;
+}
 
-    // Dibujado SIMPLIFICADO
-    lines.forEach((line, index) => {
-      const settings =
-        index === 0 ? lineSettings.firstLine :
-          index === 1 ? lineSettings.secondLine :
-            lineSettings.thirdLine;
-
-      firstPage.drawText(line, {
-        x: settings.startX,
-        y: settings.startY + (index > 2 ? (index - 2) * 20 : 0), // Ajuste para líneas extras
-        size: fontSize,
-        font: font,
-      });
-    });
-
-
+// 4. Dibujado con ajuste de margen
+lines.forEach((line, index) => {
+  const yPosition = lineSettings.firstLine.startY - (index * 20); // Espaciado consistente
+  
+  firstPage.drawText(line, {
+    x: lineSettings.firstLine.startX,
+    y: yPosition,
+    size: 12,
+    font: font,
+    color: rgb(0, 0, 0) // Negro puro
+  });
+});
 
 
 
