@@ -167,11 +167,11 @@ app.post('/generar-pdf', async (req, res) => {
     // Agregar el campo "Especifique" con salto de línea automático
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const especifiqueText = especifiqueUso || 'N/A';
-    const maxWidth = 300;
+    const maxWidth = 250;
     const fontSize = 12;
     const lineSpacing = {
-      firstLine: 145,    // Posición Y de la primera línea
-      secondLine: 125,   // Posición Y de la segunda línea
+      firstLine: 150,    // Posición Y de la primera línea
+      secondLine: 135,   // Posición Y de la segunda línea
       thirdLine: 120     // Posición Y de la tercera línea
     };
 
@@ -191,7 +191,6 @@ app.post('/generar-pdf', async (req, res) => {
         font: font,
       });
     });
-
 
 
 
