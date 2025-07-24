@@ -323,39 +323,41 @@ app.post('/generar-pdf-busqueda', async (req, res) => {
     firstPage.drawText(`${nombresSolicitante}`, { x: 180, y: 440, size: 12 });
     firstPage.drawText(`${cedulaSolicitante}`, { x: 390, y: 410, size: 12 });
     firstPage.drawText(`${estadoCivilBuscado}`, { x: 140, y: 388, size: 12 });
-    firstPage.drawText(`${declaracionUso}`, { x: 110, y: 366, size: 12 });
+  // Reemplaza esta línea:
+// firstPage.drawText(`${declaracionUso}`, { x: 110, y: 366, size: 12 });
+
+// Con este código adaptado:
+const declaracionSettings = {
+  firstLine: { startX: 110, endX: 510, startY: 366 }, // Ajusta el endX según el ancho disponible
+  secondLine: { startX: 110, endX: 510, startY: 346 }, // 20pt arriba (y aumenta)
+  thirdLine: { startX: 110, endX: 510, startY: 326 }   // 20pt más arriba
+};
+
+const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+const declaracionText = declaracionUso || 'N/A';
+const maxWidth = declaracionSettings.firstLine.endX - declaracionSettings.firstLine.startX;
+const fontSize = 12;
+
+const lines = splitTextIntoLines(declaracionText, maxWidth, fontSize, font);
+
+// Dibuja cada línea con sus coordenadas
+lines.forEach((line, index) => {
+  const settings =
+    index === 0 ? declaracionSettings.firstLine :
+      index === 1 ? declaracionSettings.secondLine :
+        { ...declaracionSettings.thirdLine, startY: declaracionSettings.thirdLine.startY - ((index - 2) * 20) };
+
+  firstPage.drawText(line, {
+    x: settings.startX,
+    y: settings.startY,
+    size: fontSize,
+    font: font,
+  });
+});
 
 
 
 
-
-    const lineSettings = {
-      firstLine: { startX: 140, endX: 340, startY: 150 }, // Ancho: 300 (440-140)
-      secondLine: { startX: 120, endX: 240, startY: 130 }, // Misma anchura, 15pt arriba
-      thirdLine: { startX: 120, endX: 240, startY: 120 }  // Misma anchura, 15pt más arriba
-    };
-
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const especifiqueText = especifiqueUso || 'N/A';
-    const maxWidth = lineSettings.firstLine.endX - lineSettings.firstLine.startX; // Ancho automático
-    const fontSize = 12;
-
-    const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
-
-    // Dibuja cada línea con sus coordenadas
-    lines.forEach((line, index) => {
-      const settings =
-        index === 0 ? lineSettings.firstLine :
-          index === 1 ? lineSettings.secondLine :
-            { ...lineSettings.thirdLine, startY: lineSettings.thirdLine.startY - ((index - 2) * 15) };
-
-      firstPage.drawText(line, {
-        x: settings.startX,
-        y: settings.startY,
-        size: fontSize,
-        font: font,
-      });
-    });
 
 
 
