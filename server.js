@@ -323,13 +323,43 @@ app.post('/generar-pdf-busqueda', async (req, res) => {
     firstPage.drawText(`${nombresSolicitante}`, { x: 180, y: 440, size: 12 });
     firstPage.drawText(`${cedulaSolicitante}`, { x: 390, y: 410, size: 12 });
     firstPage.drawText(`${estadoCivilBuscado}`, { x: 140, y: 388, size: 12 });
-    firstPage.drawText(`${declaracionUso}`, { x: 110, y: 366, size: 12 });
+
+
+
+    
+const declaracionSettings = {
+  firstLine: { startX: 110, endX: 510, startY: 366 }, // Ajusta el endX según el ancho disponible
+  secondLine: { startX: 110, endX: 510, startY: 346 }, // 20pt arriba (y aumenta)
+  thirdLine: { startX: 110, endX: 510, startY: 326 }   // 20pt más arriba
+};
+
+const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+const declaracionText = declaracionUso || 'N/A';
+const maxWidth = declaracionSettings.firstLine.endX - declaracionSettings.firstLine.startX;
+const fontSize = 12;
+
+const lines = splitTextIntoLines(declaracionText, maxWidth, fontSize, font);
+
+// Dibuja cada línea con sus coordenadas
+lines.forEach((line, index) => {
+  const settings =
+    index === 0 ? declaracionSettings.firstLine :
+      index === 1 ? declaracionSettings.secondLine :
+        { ...declaracionSettings.thirdLine, startY: declaracionSettings.thirdLine.startY - ((index - 2) * 20) };
+
+  firstPage.drawText(line, {
+    x: settings.startX,
+    y: settings.startY,
+    size: fontSize,
+    font: font,
+  });
+});
 
 
 
 
 
-
+  
 
 
 
