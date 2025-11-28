@@ -167,8 +167,8 @@ app.post('/generar-pdf', async (req, res) => {
 
     const lineSettings = {
       firstLine: { startX: 140, endX: 340, startY: 150 }, // Ancho: 300 (440-140)
-      secondLine: { startX: 180, endX: 240, startY: 130 }, // Misma anchura, 15pt arriba
-      thirdLine: { startX: 90, endX: 240, startY: 120 }  // Misma anchura, 15pt más arriba
+      secondLine: { startX: 100, endX: 220, startY: 130 }, // Misma anchura, 15pt arriba
+    
     };
 
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
