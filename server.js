@@ -510,7 +510,7 @@ app.post('/generar-pdf-razon', async (req, res) => {
       firstPage.drawText('X', {
         x: opcionesUso[usoCertificacion].x,
         y: opcionesUso[usoCertificacion].y,
-        size: 12  // Añade este parámetro
+        size: 10 // Añade este parámetro
       });
     }
 
