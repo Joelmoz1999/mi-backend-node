@@ -124,24 +124,24 @@ app.post('/generar-pdf', async (req, res) => {
     const firstPage = pages[0];
 
     // Rellenar el PDF con los datos de facturación
-    firstPage.drawText(`${nombre}`, { x: 95, y: 700, size: 12 });
-    firstPage.drawText(`${cedulaFacturacion}`, { x: 300, y: 670, size: 12 });
-    firstPage.drawText(`${direccion}`, { x: 80, y: 650, size: 12 });
-    firstPage.drawText(`${correo}`, { x: 135, y: 625, size: 12 });
-    firstPage.drawText(`${telefono}`, { x: 440, y: 625, size: 12 });
+    firstPage.drawText(`${nombre}`, { x: 95, y: 700, size: 10 });
+    firstPage.drawText(`${cedulaFacturacion}`, { x: 300, y: 670, size: 10 });
+    firstPage.drawText(`${direccion}`, { x: 80, y: 650, size: 10 });
+    firstPage.drawText(`${correo}`, { x: 135, y: 625, size: 10 });
+    firstPage.drawText(`${telefono}`, { x: 440, y: 625, size: 10 });
 
     // Rellenar el PDF con los datos de certificación del inmueble
-    firstPage.drawText(`${apellidos}`, { x: 95, y: 570, size: 12 });
-    firstPage.drawText(`${cedulaCertificacion}`, { x: 390, y: 540, size: 12 });
-    firstPage.drawText(`${estadoCivil}`, { x: 140, y: 525, size: 12 });
-    firstPage.drawText(`${lugarInmueble}`, { x: 95, y: 510, size: 12 });
-    firstPage.drawText(`${libro}`, { x: 150, y: 450, size: 12 });
-    firstPage.drawText(`${numeroInscripcion}`, { x: 320, y: 450, size: 12 });
-    firstPage.drawText(`${fechaInscripcion}`, { x: 473, y: 455, size: 12 });
-    firstPage.drawText(`${tomo}`, { x: 150, y: 420, size: 12 });
-    firstPage.drawText(`${repertorio}`, { x: 320, y: 420, size: 12 });
-    firstPage.drawText(`${fichaRegistral}`, { x: 490, y: 420, size: 12 });
-    firstPage.drawText(`${otro || 'N/A'}`, { x: 260, y: 395, size: 12 });
+    firstPage.drawText(`${apellidos}`, { x: 80, y: 570, size: 10 });
+    firstPage.drawText(`${cedulaCertificacion}`, { x: 390, y: 540, size: 10 });
+    firstPage.drawText(`${estadoCivil}`, { x: 140, y: 525, size: 10 });
+    firstPage.drawText(`${lugarInmueble}`, { x: 80, y: 510, size: 10 });
+    firstPage.drawText(`${libro}`, { x: 150, y: 450, size: 10 });
+    firstPage.drawText(`${numeroInscripcion}`, { x: 320, y: 450, size: 10 });
+    firstPage.drawText(`${fechaInscripcion}`, { x: 473, y: 455, size: 10 });
+    firstPage.drawText(`${tomo}`, { x: 150, y: 420, size: 10 });
+    firstPage.drawText(`${repertorio}`, { x: 320, y: 420, size: 10 });
+    firstPage.drawText(`${fichaRegistral}`, { x: 490, y: 420, size: 10 });
+    firstPage.drawText(`${otro || 'N/A'}`, { x: 260, y: 395, size: 10 });
 
     // Marcar la opción seleccionada con una "X"
     const opciones = {
