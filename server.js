@@ -166,10 +166,17 @@ app.post('/generar-pdf', async (req, res) => {
 
 
     const lineSettings = {
-      firstLine: { startX: 140, endX: 340, startY: 150 }, // Ancho: 300 (440-140)
-      secondLine: { startX: 140, endX: 340, startY: 130 }, // Misma anchura, 15pt arriba
+      firstLine: { startX: 140, endX: 340, startY: 150 }, 
+      secondLine: { startX: 140, endX: 340, startY: 130 }, 
     
     };
+
+
+
+
+
+
+    
 
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const especifiqueText = especifiqueUso || 'N/A';
@@ -208,10 +215,10 @@ app.post('/generar-pdf', async (req, res) => {
 
     // Rellenar el PDF con los datos de recepción del documento
     if (recepcionDocumento === 'Presencial') {
-      firstPage.drawText('X', { x: 398, y: 308, size: 12 });
+      firstPage.drawText('X', { x: 398, y: 308, size: 10 });
     } else if (recepcionDocumento === 'Electrónico') {
-      firstPage.drawText('X', { x: 398, y: 280, size: 12 });
-      firstPage.drawText(`${correoRecepcion}`, { x: 360, y: 260, size: 12 });
+      firstPage.drawText('X', { x: 398, y: 280, size: 10 });
+      firstPage.drawText(`${correoRecepcion}`, { x: 360, y: 260, size: 10 });
     }
 
     // Agregar Lugar y Fecha automáticamente
