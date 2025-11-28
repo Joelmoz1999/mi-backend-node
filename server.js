@@ -134,7 +134,7 @@ app.post('/generar-pdf', async (req, res) => {
     firstPage.drawText(`${apellidos}`, { x: 79, y: 570, size: 10 });
     firstPage.drawText(`${cedulaCertificacion}`, { x: 390, y: 540, size: 10 });
     firstPage.drawText(`${estadoCivil}`, { x: 140, y: 525, size: 10 });
-    firstPage.drawText(`${lugarInmueble}`, { x: 79, y: 510, size: 10 });
+    firstPage.drawText(`${lugarInmueble}`, { x: 79, y: 509, size: 10 });
     firstPage.drawText(`${libro}`, { x: 150, y: 450, size: 10 });
     firstPage.drawText(`${numeroInscripcion}`, { x: 320, y: 450, size: 10 });
     firstPage.drawText(`${fechaInscripcion}`, { x: 473, y: 455, size: 10 });
@@ -155,7 +155,7 @@ app.post('/generar-pdf', async (req, res) => {
       firstPage.drawText('X', {
         x: opciones[usoCertificacion].x,
         y: opciones[usoCertificacion].y,
-        size: 12,
+        size: 10,
       });
     }
 
@@ -167,8 +167,8 @@ app.post('/generar-pdf', async (req, res) => {
 
     const lineSettings = {
       firstLine: { startX: 140, endX: 340, startY: 150 }, // Ancho: 300 (440-140)
-      secondLine: { startX: 120, endX: 240, startY: 130 }, // Misma anchura, 15pt arriba
-      thirdLine: { startX: 120, endX: 240, startY: 120 }  // Misma anchura, 15pt más arriba
+      secondLine: { startX: 100, endX: 240, startY: 130 }, // Misma anchura, 15pt arriba
+      thirdLine: { startX: 105, endX: 240, startY: 120 }  // Misma anchura, 15pt más arriba
     };
 
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
