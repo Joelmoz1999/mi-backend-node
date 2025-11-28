@@ -181,7 +181,7 @@ app.post('/generar-pdf', async (req, res) => {
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const especifiqueText = especifiqueUso || 'N/A';
     const maxWidth = lineSettings.firstLine.endX - lineSettings.firstLine.startX; // Ancho automático
-    const fontSize = 12;
+    const fontSize = 10;
 
     const lines = splitTextIntoLines(especifiqueText, maxWidth, fontSize, font);
 
