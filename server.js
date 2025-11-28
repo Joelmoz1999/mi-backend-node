@@ -480,17 +480,17 @@ app.post('/generar-pdf-razon', async (req, res) => {
     const firstPage = pdfDoc.getPages()[0];
 
     // === DATOS DE FACTURACIÓN ===
-    firstPage.drawText(nombre, { x: 95, y: 700, size: 12 });
-    firstPage.drawText(cedulaFacturacion, { x: 300, y: 670, size: 12 });
-    firstPage.drawText(direccion, { x: 80, y: 650, size: 12 });
-    firstPage.drawText(correo || 'N/A', { x: 135, y: 625, size: 12 });
-    firstPage.drawText(telefono, { x: 440, y: 625, size: 12 });
+    firstPage.drawText(nombre, { x: 95, y: 700, size: 11 });
+    firstPage.drawText(cedulaFacturacion, { x: 300, y: 670, size: 11 });
+    firstPage.drawText(direccion, { x: 80, y: 650, size: 11 });
+    firstPage.drawText(correo || 'N/A', { x: 135, y: 625, size: 11 });
+    firstPage.drawText(telefono, { x: 440, y: 625, size: 11 });
 
     // === DATOS DE RAZÓN ===
-    firstPage.drawText(apellidos, { x: 95, y: 570, size: 12 });
-    firstPage.drawText(cedulaCertificacion, { x: 390, y: 540, size: 12 });
-    firstPage.drawText(estadoCivil || 'N/A', { x: 140, y: 525, size: 12 });
-    firstPage.drawText(lugarInmueble, { x: 95, y: 510, size: 12 });
+    firstPage.drawText(apellidos, { x: 95, y: 570, size: 11 });
+    firstPage.drawText(cedulaCertificacion, { x: 390, y: 540, size: 11 });
+    firstPage.drawText(estadoCivil || 'N/A', { x: 140, y: 525, size: 11 });
+    firstPage.drawText(lugarInmueble, { x: 95, y: 510, size: 11 });
 
     // Marcado de opciones (Ejemplo para "Uso de certificación")
     const opcionesUso = {
