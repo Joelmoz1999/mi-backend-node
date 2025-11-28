@@ -487,10 +487,10 @@ app.post('/generar-pdf-razon', async (req, res) => {
     firstPage.drawText(telefono, { x: 440, y: 625, size: 10 });
 
     // === DATOS DE RAZÓN ===
-    firstPage.drawText(apellidos, { x: 95, y: 570, size: 10 });
+    firstPage.drawText(apellidos, { x: 93, y: 570, size: 10 });
     firstPage.drawText(cedulaCertificacion, { x: 390, y: 540, size: 10 });
     firstPage.drawText(estadoCivil || 'N/A', { x: 140, y: 525, size: 10 });
-    firstPage.drawText(lugarInmueble, { x: 95, y: 510, size: 10 });
+    firstPage.drawText(lugarInmueble, { x: 92, y: 510, size: 10 });
 
     // Marcado de opciones (Ejemplo para "Uso de certificación")
     const opcionesUso = {
