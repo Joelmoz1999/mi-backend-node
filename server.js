@@ -166,8 +166,8 @@ app.post('/generar-pdf', async (req, res) => {
 
 
     const lineSettings = {
-      firstLine: { startX: 140, endX: 335, startY: 150, size: 10}, 
-      secondLine: { startX: 140, endX: 330, startY: 130, size: 10 }, 
+      firstLine: { startX: 140, endX: 340, startY: 150, size: 10}, 
+      secondLine: { startX: 140, endX: 340, startY: 130, size: 10 }, 
     
     };
 
@@ -317,33 +317,33 @@ app.post('/generar-pdf-busqueda', async (req, res) => {
     const firstPage = pages[0];
 
     // Rellenar el PDF con los datos de facturación
-    firstPage.drawText(`${nombre}`, { x: 95, y: 665, size: 12 });
-    firstPage.drawText(`${cedulaFacturacion}`, { x: 300, y: 635, size: 12 });
-    firstPage.drawText(`${direccion}`, { x: 80, y: 612, size: 12 });
-    firstPage.drawText(`${correo}`, { x: 135, y: 590, size: 12 });
-    firstPage.drawText(`${telefono}`, { x: 440, y: 590, size: 12 });
+    firstPage.drawText(`${nombre}`, { x: 95, y: 665, size: 10 });
+    firstPage.drawText(`${cedulaFacturacion}`, { x: 300, y: 635, size: 10 });
+    firstPage.drawText(`${direccion}`, { x: 80, y: 612, size: 10 });
+    firstPage.drawText(`${correo}`, { x: 135, y: 590, size: 10 });
+    firstPage.drawText(`${telefono}`, { x: 440, y: 590, size: 10 });
 
     // Rellenar el PDF con los datos de búsqueda
-    firstPage.drawText(`${nombresCompletos}`, { x: 95, y: 520, size: 12 });
-    firstPage.drawText(`${cedula}`, { x: 270, y: 488, size: 12 });
-    firstPage.drawText(`${estadoCivilSolicitante}`, { x: 460, y: 488, size: 12 });
-    firstPage.drawText(`${nombresSolicitante}`, { x: 180, y: 440, size: 12 });
-    firstPage.drawText(`${cedulaSolicitante}`, { x: 390, y: 410, size: 12 });
-    firstPage.drawText(`${estadoCivilBuscado}`, { x: 140, y: 388, size: 12 });
+    firstPage.drawText(`${nombresCompletos}`, { x: 95, y: 520, size: 10 });
+    firstPage.drawText(`${cedula}`, { x: 270, y: 488, size: 10 });
+    firstPage.drawText(`${estadoCivilSolicitante}`, { x: 460, y: 488, size: 10 });
+    firstPage.drawText(`${nombresSolicitante}`, { x: 180, y: 440, size: 10 });
+    firstPage.drawText(`${cedulaSolicitante}`, { x: 390, y: 410, size: 10 });
+    firstPage.drawText(`${estadoCivilBuscado}`, { x: 140, y: 388, size: 10 });
 
 
 
     
 const declaracionSettings = {
-  firstLine: { startX: 110, endX: 510, startY: 366 }, // Ajusta el endX según el ancho disponible
-  secondLine: { startX: 110, endX: 510, startY: 346 }, // 20pt arriba (y aumenta)
-  thirdLine: { startX: 110, endX: 510, startY: 326 }   // 20pt más arriba
+  firstLine: { startX: 110, endX: 510, startY: 366, size: 10 }, // Ajusta el endX según el ancho disponible
+  secondLine: { startX: 110, endX: 510, startY: 346, size: 10 }, // 20pt arriba (y aumenta)
+  thirdLine: { startX: 110, endX: 510, startY: 326, size: 10 }   // 20pt más arriba
 };
 
 const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 const declaracionText = declaracionUso || 'N/A';
 const maxWidth = declaracionSettings.firstLine.endX - declaracionSettings.firstLine.startX;
-const fontSize = 12;
+const fontSize = 10;
 
 const lines = splitTextIntoLines(declaracionText, maxWidth, fontSize, font);
 
@@ -399,8 +399,8 @@ lines.forEach((line, index) => {
       year: 'numeric',
     });
 
-    firstPage.drawText(`${lugar}`, { x: 390, y: 222, size: 12 });
-    firstPage.drawText(`${fechaActual}`, { x: 340, y: 200, size: 12 });
+    firstPage.drawText(`${lugar}`, { x: 390, y: 222, size: 10 });
+    firstPage.drawText(`${fechaActual}`, { x: 340, y: 200, size: 10 });
 
     // Guardar el PDF modificado
     const modifiedPdfBytes = await pdfDoc.save();
