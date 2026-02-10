@@ -135,7 +135,7 @@ app.post('/generar-pdf', async (req, res) => {
     firstPage.drawText(`${cedulaCertificacion}`, { x: 390, y: 540, size: 10 });
     firstPage.drawText(`${estadoCivil}`, { x: 140, y: 525, size: 10 });
     firstPage.drawText(`${lugarInmueble}`, { x: 79, y: 509, size: 10 });
-    firstPage.drawText(`${libro}`, { x: 132, y: 450, size: 10 });
+    firstPage.drawText(`${libro}`, { x: 122, y: 450, size: 10 });
     firstPage.drawText(`${numeroInscripcion}`, { x: 320, y: 450, size: 10 });
     firstPage.drawText(`${fechaInscripcion}`, { x: 473, y: 455, size: 10 });
     firstPage.drawText(`${tomo}`, { x: 150, y: 420, size: 10 });
