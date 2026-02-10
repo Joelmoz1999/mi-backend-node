@@ -135,7 +135,7 @@ app.post('/generar-pdf', async (req, res) => {
     firstPage.drawText(`${cedulaCertificacion}`, { x: 390, y: 540, size: 10 });
     firstPage.drawText(`${estadoCivil}`, { x: 140, y: 525, size: 10 });
     firstPage.drawText(`${lugarInmueble}`, { x: 79, y: 509, size: 10 });
-    firstPage.drawText(`${libro}`, { x: 150, y: 450, size: 10 });
+    firstPage.drawText(`${libro}`, { x: 140, y: 450, size: 10 });
     firstPage.drawText(`${numeroInscripcion}`, { x: 320, y: 450, size: 10 });
     firstPage.drawText(`${fechaInscripcion}`, { x: 473, y: 455, size: 10 });
     firstPage.drawText(`${tomo}`, { x: 150, y: 420, size: 10 });
@@ -229,11 +229,11 @@ app.post('/generar-pdf', async (req, res) => {
       year: 'numeric',
     });
 
-    firstPage.drawText(`${lugar}`, { x: 400, y: 225, size: 12 });
-    firstPage.drawText(`${fechaActual}`, { x: 340, y: 210, size: 12 });
+    firstPage.drawText(`${lugar}`, { x: 400, y: 225, size: 10 });
+    firstPage.drawText(`${fechaActual}`, { x: 340, y: 210, size: 10 });
 
     // Agregar Cédula del Solicitante
-    firstPage.drawText(`${cedulaSolicitante}`, { x: 400, y: 120, size: 12 });
+    firstPage.drawText(`${cedulaSolicitante}`, { x: 400, y: 120, size: 10 });
 
     // Guardar el PDF modificado
     const modifiedPdfBytes = await pdfDoc.save();
