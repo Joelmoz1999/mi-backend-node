@@ -160,8 +160,8 @@ app.post('/generar-pdf', async (req, res) => {
     }
 
     const lineSettings = {
-      firstLine: { startX: 140, endX: 335, startY: 150, size: 10}, 
-      secondLine: { startX: 110, endX: 335, startY: 130, size: 10 }, 
+      firstLine: { startX: 140, endX: 330, startY: 150, size: 10}, 
+      secondLine: { startX: 100, endX: 330, startY: 130, size: 10 }, 
     
     };
    
