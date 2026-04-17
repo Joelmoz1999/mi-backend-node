@@ -159,24 +159,12 @@ app.post('/generar-pdf', async (req, res) => {
       });
     }
 
-
-
-
-
-
-
     const lineSettings = {
-      firstLine: { startX: 140, endX: 340, startY: 150, size: 10}, 
-      secondLine: { startX: 130, endX: 340, startY: 130, size: 10 }, 
+      firstLine: { startX: 140, endX: 338, startY: 150, size: 10}, 
+      secondLine: { startX: 120, endX: 338, startY: 130, size: 10 }, 
     
     };
-
-
-
-
-
-
-    
+   
 
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const especifiqueText = especifiqueUso || 'N/A';
